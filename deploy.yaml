@@ -1,0 +1,27 @@
+- name: Playbook to download and install tomcat8
+  hosts: apache
+  become: yes
+
+  tasks:
+  - name: deploy the shoppigcart application
+    get_url:
+      url: https://www.oracle.com/webfolder/technetwork/tutorials/obe/fmw/wls/10g/r3/cluster/session_state/files/shoppingcart.zip
+      dest: /tmp
+  - name: unzip the file
+    unarchive:
+     src: /tmp/shoppingcart.zip
+     dest: /tmp
+     remote_src: yes
+
+  - name: "stop the tomcat server"
+    shell: nohup /opt/tomcat/apache-tomcat-10.0.20/bin/./shutdown.sh
+
+
+  - name:
+    copy:
+      src: /tmp/shoppingcart.war
+      dest: /opt/tomcat/apache-tomcat-10.0.20/webapps
+      remote_src: yes
+
+  - name: "start the tomcat server"
+    shell: nohup /opt/tomcat/apache-tomcat-10.0.20/bin/./startup.sh
